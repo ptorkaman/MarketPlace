@@ -1,0 +1,174 @@
+﻿@model MarketPlace.DataLayer.DTOs.Seller.FilterSellerDTO
+@using MarketPlace.Application.Extentions
+@using MarketPlace.DataLayer.DTOs.Seller
+@using MarketPlace.DataLayer.Entities.Store
+
+
+@{
+    ViewData["Title"] = "درخواست های فروشندگی";
+}
+
+@section Scripts
+{ 
+  <partial name="_JqueryValidator" />
+}
+
+<div class="col-xs-4">
+    <div class="well with-header">
+        <div class="header bordered-sky">
+            فیلتر
+        </div>
+        <form asp-area="Admin" asp-controller="Seller" asp-action="SellerRequest" method="get" id="filter-form">
+            <input type="hidden" asp-for="PageId" />
+            <div class="form-group">
+                <label>نام فروشگاه</label>
+                <input asp-for="StoreName" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>موبایل</label>
+                <input asp-for="Mobile" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>تلفن</label>
+                <input asp-for="Phone" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>آدرس</label>
+                <input asp-for="Address" type="text" class="form-control">
+            </div>
+
+            <hr class="wide">
+            <h5>وضعیت</h5>
+            <div class="control-group">
+
+                @*<div class="radio">
+                        <label>
+                            <input value="@FilterSellerState.All" name="@nameof(Model.State)" @(Model.State==FilterSellerState.All ? "checked" : "") type="radio" class="colored-blue">
+                            <span class="text">همه</span>
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input value="@FilterSellerState.Accepted" name="@nameof(Model.State)" @(Model.State == FilterSellerState.Accepted ? "checked" : "") type="radio" class="colored-blue">
+                            <span class="text">تایید شده</span>
+                        </label>
+                    </div>
+                *@
+
+                @foreach (var item in Html.GetEnumSelectList<FilterSellerState>())
+                {
+                    <div class="radio">
+                        <label>
+                            <input value="@item.Value" name="@nameof(Model.State)" @(Convert.ToInt32(item.Value) == Convert.ToInt32(Model.State) ? "checked" : "") type="radio" class="colored-blue">
+                            <span class="text">@item.Text</span>
+                        </label>
+                    </div>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block">فیلتر </button>
+        </form>
+    </div>
+</div>
+
+
+<div class="col-xs-8">
+    <div class="well with-header with-footer">
+        <div class="header bordered-sky">
+            @ViewData["Title"]
+        </div>
+        @if (Model.seller != null && Model.seller.Any())
+        {
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            شناسه
+                        </th>
+                        <th>
+                            نام فروشگاه
+                        </th>
+                        <th>
+                            تلفن
+                        </th>
+                        <th>
+                            وضعیت
+                        </th>
+                        <th>
+                            دستورات
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var seller in Model.seller)
+                    {
+                        <tr id="ajax-url-item-@seller.Id">
+                            <td>
+                                @seller.Id
+                            </td>
+                            <td>
+                                @seller.StoreName
+                            </td>
+                            <td>
+                                @seller.Phone
+                            </td>
+                            <td>
+                                @seller.StoreAcceptanceState.GetEnumName()
+                            </td>
+                            <td>
+                                @if (seller.StoreAcceptanceState != StoreAcceptanceState.Accepted)
+                                {
+                                    <a class="btn btn-success" ajax-url-button="@seller.Id" asp-area="Admin" asp-controller="Seller" asp-action="AcceptSellerRequest" asp-route-requestId="@seller.Id"> تایید اطلاعات </a>
+                                }
+                                @if (seller.StoreAcceptanceState != StoreAcceptanceState.Rejected)
+                                {
+                                    <a class="btn btn-danger" data-toggle="modal" data-target=".reject-modal-@seller.Id"> ردکردن اطلاعات </a>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
+
+        <div class="footer">
+            <partial name="_AdminPagingPartial" model="@Model.GetCurrentPaging()" />
+        </div>
+    </div>
+</div>
+@if (Model.seller != null && Model.seller.Any()) 
+{
+
+    @foreach (var seller in Model.seller)
+    {
+        <div class="modal fade reject-modal-@seller.Id" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myLargeModalLabel">رد کردن اطلاعات</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-area="Admin"
+                              asp-controller="Seller" 
+                              asp-action="RejectSellerRequest"
+                              asp-antiforgery="true"
+                              data-ajax="true"
+                              data-method="post"
+                              data-ajax-success="OnSuccessRejectItem">
+
+                          <partial name="_RejectItemPartial" model="@(new MarketPlace.DataLayer.DTOs.Common.RejectItemDTO { Id=seller.Id })" />
+                            <hr/>
+                            <button type="submit" class="btn btn-danger"> رد کردن اطلاعات</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+}
+

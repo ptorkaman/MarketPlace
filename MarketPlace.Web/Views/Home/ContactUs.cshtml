@@ -1,0 +1,89 @@
+﻿@model MarketPlace.DataLayer.DTOs.Contact.CreateContactUsDTO
+@{
+    ViewData["Title"] = "تماس با ما";
+}
+
+@section Scripts
+{
+    <!--map js code here-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEn4c_T1rFt7ltf_oNavnjND8dDPm4KQs&language=fa"></script>
+    <script src="https://www.google.com/jsapi"></script>
+    <script src="/js/map.js"></script>
+    <partial name="_JqueryValidator" />
+    <partial name="_CaptchaScripts" />
+
+}
+
+
+<!--breadcrumbs area start-->
+<div class="breadcrumbs_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="breadcrumb_content">
+                    <ul>
+                        <li><a href="/">خانه</a></li>
+                        <li>تماس با ما</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--breadcrumbs area end-->
+<!--contact map start-->
+<div class="contact_map mt-60">
+    <div class="map-area">
+        <div id="googleMap"></div>
+    </div>
+</div>
+<!--contact map end-->
+
+<div class="contact_area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="contact_message content">
+                    <h3>تماس با ما</h3>
+                    <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی</p>
+                    <ul>
+                        <li><i class="fa fa-fw fa-map-marker"></i> تبریز، چهارراه آبرسان، فلکه دانشگاه، برج بلور، طبقه 678، واحد 85</li>
+                        <li><i class="fa fa-fw fa-phone"></i> <span class="ltr-text">+(98) 123 456 789</span> ، <span class="ltr-text">+(98) 123 456 789</span></li>
+                        <li><i class="fa fa-fw fa-envelope-o"></i> <a href="#">info@sample.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="contact_message form">
+                    <h3>با ما در میان بگذارید</h3>
+                    <form method="POST" asp-controller="Home" asp-action="ContactUs">
+                        <partial name="_CaptchaInput" />
+                        <p>
+                            <label> نام شما (الزامی)</label>
+                            <input asp-for="FullName" placeholder="نام *" type="text">
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </p>
+                        <p>
+                            <label> ایمیل شما (الزامی)</label>
+                            <input asp-for="Email" placeholder="* ایمیل" type="email" dir="ltr">
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </p>
+                        <p>
+                            <label> موضوع</label>
+                            <input asp-for="Subject" placeholder="موضوع" type="text">
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </p>
+                        <div class="contact_textarea">
+                            <label> پیام شما</label>
+                            <textarea asp-for="content" placeholder="پیام *" class="form-control2"></textarea>
+                            <span asp-validation-for="content" class="text-danger"></span>
+                        </div>
+                        <button type="submit"> ارسال</button>
+                        <p class="form-messege"></p>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
